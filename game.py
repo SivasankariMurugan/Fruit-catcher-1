@@ -63,7 +63,7 @@ def update():
             falling_objects.remove(obj)
 
        # Spawn new objects
-    if random.randint(1, 30) == 1:
+    if random.randint(1, 80) == 1:
         if random.randint(1,4)>1:
             new_object = Actor(random.choice(fruits), (random.randint(50, WIDTH - 50), 0))
             if not any(new_object.colliderect(obj) for obj in falling_objects):
