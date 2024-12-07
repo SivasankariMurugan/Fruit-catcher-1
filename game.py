@@ -1,5 +1,4 @@
 import pgzrun
-from pygame.transform import scale
 import random
 
 
