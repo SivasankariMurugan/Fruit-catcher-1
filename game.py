@@ -39,7 +39,5 @@ def on_mouse_down(pos):
     # Check if the start button is clicked
     if not game_active and Rect((250, 90), (100, 40)).collidepoint(pos):
         game_active = True
-        print("Start button clicked! Game is now active.")
-
 
 pgzrun.go()
