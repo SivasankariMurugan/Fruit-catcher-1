@@ -1,7 +1,7 @@
 import pgzrun
 import random
 
-
+TITLE="Fruit Catcher"
 WIDTH = 600
 HEIGHT = 600
 BACKGROUND_COLOR = (207, 159, 255)
