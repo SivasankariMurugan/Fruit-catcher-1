@@ -42,6 +42,7 @@ def fruit_bomb_generator():
             if not collision:
                 falling_objects.append(new_bomb)
 def collision_detection():
+    for obj in falling_objects:
      if obj.y >= basket.top and obj.colliderect(basket):
             if current_level == 1 and obj.image == target_fruit:
                 score += 10
