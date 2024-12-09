@@ -68,9 +68,9 @@ def begin():
 
 def upcoming_levels():
     global game_active, falling_objects, current_level, speed
+    game_active=True
     if score >= 20:
         game_active=True
-        falling_objects.clear()
         current_level = 2
         speed = 3
 
@@ -107,8 +107,6 @@ def update():
     collision_detection()
     fruit_bomb_generator()
  
-    
-
 def update_timer():
     global time_left, game_active
     if time_left > 0:
