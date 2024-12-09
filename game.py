@@ -1,16 +1,15 @@
 import pgzrun
 import random
 
-TITLE="Fruit Catcher"
+TITLE = "Fruit Catcher"
 WIDTH = 600
 HEIGHT = 600
-BACKGROUND_COLOR = (207, 159, 255)
+BACKGROUND_COLOR = (152, 251, 152)
 BUTTON_COLOR = (100, 200, 100)
 TEXT_COLOR = (0, 0, 0)
 BLACK = (0, 0, 0)
 game_active = False
 current_level = 0
-
 
 basket = Actor("basket", (WIDTH // 2, HEIGHT - 50))
 falling_objects = []
@@ -19,24 +18,24 @@ bombs = ["bomb1", "bomb2"]
 speed = 2
 score = 0
 high_score = 0
-target_fruit = "apple"
+target_fruit = random.choice(fruits)
+time_left = 60  # seconds
 
 def begin():
-    global game_active, score,  falling_objects, current_level, speed
+    global game_active, score, falling_objects, current_level, speed, time_left
     game_active = True
     score = 0
- 
     falling_objects.clear()
     current_level = 1
     speed = 2
+    time_left = 60  
 
 def upcoming_levels():
-    global game_active,  falling_objects, current_level, speed
+    global game_active, falling_objects, current_level, speed
     game_active = True
-
-    falling_objects.clear()
-    current_level += 1
-    if current_level == 2:
+    if score == 50:
+        falling_objects.clear()
+        current_level = 2
         speed = 3
 
 def draw():
@@ -46,7 +45,7 @@ def draw():
         for obj in falling_objects:
             obj.draw()
         display_score(score)
-        
+        screen.draw.text(f"Time left: {time_left}", (450, 10), fontsize=30, color=BLACK)
         if current_level == 1:
             screen.draw.text(
                 f"Catch only {target_fruit}!",
@@ -64,7 +63,7 @@ def draw():
 
 def display_score(score):
     screen.draw.text(f"Score: {score}", topleft=(12, 12), fontsize=30, color=BLACK)
-
+    screen.draw.text(f"Level: {current_level}", topleft=(12, 45), fontsize=30, color=BLACK)
 
 def update():
     global game_active, speed, score
@@ -105,6 +104,19 @@ def update():
             if not any(new_object.colliderect(obj) for obj in falling_objects):
                 falling_objects.append(new_object)
 
+    # Check if score is 100 and update level
+    if score >= 100:
+        game_active = False
+        upcoming_levels()
+
+def update_timer():
+    global time_left
+    if time_left > 0:
+        time_left -= 1
+    else:
+        clock.unschedule(update_timer)
+        end_level()
+
 def end_level():
     global game_active, high_score
     game_active = False
@@ -112,9 +124,10 @@ def end_level():
         high_score = score
     if current_level == 1:
         upcoming_levels()
+    if current_level==2:
+        game_active=True
     else:
         display_end_screen()
-
 
 def on_mouse_down(pos):
     global game_active
@@ -123,5 +136,8 @@ def on_mouse_down(pos):
             begin()
         else:
             upcoming_levels()
+
+# Schedule the timer to update every second
+clock.schedule_interval(update_timer, 1.0)
 
 pgzrun.go()
