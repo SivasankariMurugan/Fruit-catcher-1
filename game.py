@@ -106,15 +106,6 @@ def update():
     basket_control()
     collision_detection()
     fruit_bomb_generator()
- 
-def update_timer():
-    global time_left, game_active
-    if time_left > 0:
-        time_left -= 1
-    else:
-        clock.unschedule(update_timer)
-        end_level()
-
 def end_level():
     global game_active, high_score
     game_active = False
@@ -124,9 +115,20 @@ def end_level():
         upcoming_levels()
     else:
         display_end_screen()
+ 
+ 
+def update_timer():
+    global time_left, game_active
+    if time_left > 0:
+        time_left -= 1
+    else:
+        clock.unschedule(update_timer)
+        end_level()
 
 def display_end_screen():
-    pass  
+    pass 
+
+
 
 def on_mouse_down(pos):
     if not game_active and Rect((250, 90), (100, 40)).collidepoint(pos):
