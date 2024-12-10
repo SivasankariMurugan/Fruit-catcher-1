@@ -1,5 +1,6 @@
 import pgzrun
 import random
+
 TITLE = "Fruit Catcher"
 WIDTH = 600
 HEIGHT = 600
@@ -7,8 +8,12 @@ BACKGROUND_COLOR = (175, 238, 238)
 BUTTON_COLOR = (100, 200, 100)
 TEXT_COLOR = (0, 0, 0)
 BLACK = (0, 0, 0)
+
 game_active = False
 current_level = 0
+level1_over = False
+level2_over = False
+
 basket = Actor("basket", (WIDTH // 2, HEIGHT - 50))
 falling_objects = []
 fruits = ["apple", "banana", "strawberry"]
@@ -17,7 +22,7 @@ speed = 2
 score = 0
 high_score = 0
 target_fruit = random.choice(fruits)
-time_left = 60 
+time_left = 60
 
 def basket_control():
     if keyboard.left and basket.x > 70:
@@ -64,15 +69,7 @@ def begin():
     falling_objects.clear()
     current_level = 1
     speed = 2
-    time_left = 60  
-
-def upcoming_levels():
-    global game_active, falling_objects, current_level, speed
-    game_active=True
-    if score >= 20:
-        game_active=True
-        current_level = 2
-        speed = 3
+    time_left = 60
 
 def draw():
     screen.fill(BACKGROUND_COLOR)
@@ -85,38 +82,60 @@ def draw():
         if current_level == 1:
             screen.draw.text(f"Catch only {target_fruit}!", topleft=(200, 12), fontsize=30, color=BLACK)
     else:
-        screen.draw.filled_rect(Rect((250, 90), (100, 40)), BUTTON_COLOR)
-        screen.draw.text("Start", center=(300, 110), fontsize=24, color=TEXT_COLOR)
-        screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
-        if current_level > 0:
-            screen.draw.text(f"Score: {score}", center=(300, 300), fontsize=40, color=TEXT_COLOR)
-            screen.draw.text(f"High Score: {high_score}", center=(300, 360), fontsize=40, color=TEXT_COLOR)
+        if not level1_over:
+            screen.draw.filled_rect(Rect((250, 90), (100, 40)), BUTTON_COLOR)
+            screen.draw.text("Start", center=(300, 110), fontsize=24, color=TEXT_COLOR)
+            screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
+            if current_level > 0:
+                screen.draw.text(f"Score: {score}", center=(WIDTH // 2, HEIGHT // 2 - 20), fontsize=40, color=TEXT_COLOR)
+                screen.draw.text(f"High Score: {high_score}", center=(WIDTH // 2, HEIGHT // 2 + 20), fontsize=40, color=TEXT_COLOR)
+        if level1_over:
+            rect = Rect((250, HEIGHT // 2 - 20), (120, 50))
+            screen.draw.filled_rect(rect, BUTTON_COLOR)
+            screen.draw.text("Begin Level 2", center=rect.center, fontsize=24, color=TEXT_COLOR)
+            screen.draw.text(f"Level 1 ended", center=(WIDTH // 2, HEIGHT // 2 - 60), fontsize=30, color=BLACK)
+
+def on_mouse_down(pos):
+    global current_level
+    if not game_active:
+        start_rect = Rect((250, 90), (100, 40))
+        level2_rect = Rect((250, HEIGHT // 2 - 20), (100, 40))
+        if start_rect.collidepoint(pos):
+            begin()
+        elif level1_over and level2_rect.collidepoint(pos):
+            current_level = 2
+            begin()
+
 
 def display_score():
     screen.draw.text(f"Score: {score}", topleft=(12, 12), fontsize=30, color=BLACK)
     screen.draw.text(f"Level: {current_level}", topleft=(12, 45), fontsize=30, color=BLACK)
 
+def level_checker():
+    global level1_over, level2_over, current_level
+    if current_level == 1 and (score >= 30 or time_left == 0):
+        level1_over = True
+        end_level()
+    elif current_level == 2 and (score >= 40 or time_left == 0):
+        level2_over = True
+        end_level()
+
 def update():
-    global game_active, speed, score
     if not game_active:
         return
     for obj in falling_objects:
         obj.y += speed
-    upcoming_levels()
     basket_control()
     collision_detection()
     fruit_bomb_generator()
+    level_checker()
+
 def end_level():
     global game_active, high_score
     game_active = False
     if score > high_score:
         high_score = score
-    if current_level == 1:
-        upcoming_levels()
-    else:
-        display_end_screen()
- 
- 
+
 def update_timer():
     global time_left, game_active
     if time_left > 0:
@@ -125,16 +144,9 @@ def update_timer():
         clock.unschedule(update_timer)
         end_level()
 
-def display_end_screen():
-    pass 
-
-
-
-def on_mouse_down(pos):
-    if not game_active and Rect((250, 90), (100, 40)).collidepoint(pos):
-        begin()
 
 clock.schedule_interval(update_timer, 1.0)
 pgzrun.go()
+
 
 
