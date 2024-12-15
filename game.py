@@ -22,11 +22,14 @@ bombs = ["bomb1", "bomb2"]
 speed = 2
 score = 0
 high_score = 0
-target_fruit = random.choice(fruits)
+
 time_left = 60
 total_time_taken = 0
 level1_time = 0
 level2_time = 0
+target_fruit1=random.choice(fruits)
+target_fruit2=random.choice(fruits)
+
 
 def load_highscore():
     global high_score
@@ -52,7 +55,7 @@ def basket_control():
         basket.x += 5
 
 def fruit_bomb_generator():
-    if random.randint(1, 100) == 1:
+    if random.randint(1, 90) == 1:
         new_fruit = Actor(random.choice(fruits), (random.randint(50, WIDTH - 50), 0))
         collision = False
         for obj in falling_objects:
@@ -60,7 +63,7 @@ def fruit_bomb_generator():
                 collision = True
         if not collision:
             falling_objects.append(new_fruit)
-    if random.randint(1, 150) == 1:
+    if random.randint(1, 145) == 1:
         new_bomb = Actor(random.choice(bombs), (random.randint(50, WIDTH - 50), 0))
         collision = False
         for obj in falling_objects:
@@ -73,19 +76,24 @@ def collision_detection():
     global score
     for obj in falling_objects:
         if obj.y >= basket.top and obj.colliderect(basket):
-            if obj.image == target_fruit:
-                score += 10
-            elif obj.image in fruits:
-                score += 5
-            if current_level == 1:
-                if obj.image in bombs:
+            if current_level==1:
+                if obj.image == target_fruit1:
+                    score += 10
+                elif obj.image in bombs:
                     score -= 5
-            elif current_level == 2:
-                if obj.image in bombs:
+                elif obj.image in fruits:
+                    score += 5                
+            elif current_level==2:
+                if obj.image == target_fruit2:
+                    score += 10
+                elif obj.image in bombs:
                     score -= 10
+                elif obj.image in fruits:
+                    score += 5
             falling_objects.remove(obj)
         elif obj.y > HEIGHT:
             falling_objects.remove(obj)
+
 
 def begin():
     global game_active, score, falling_objects, current_level, speed, time_left, start_time
@@ -99,7 +107,10 @@ def begin():
     elif current_level == 2:
         speed = 3
     time_left = 60
+    clock.unschedule(update_timer)  # Unschedule the previous timer
+    clock.schedule_interval(update_timer, 1.0)  # Reschedule the timer
 
+ 
 def draw():
     screen.fill(BACKGROUND_COLOR)
     if game_active:
@@ -108,18 +119,22 @@ def draw():
             obj.draw()
         display_score()
         screen.draw.text(f"Time left: {time_left}", topright=(WIDTH - 10, 10), fontsize=30, color=BLACK)
-        screen.draw.text(
-        f"Catch only {target_fruit}!",
-        topleft=(200, 12),
+        if current_level==1:
+            screen.draw.text(f"Catch only {target_fruit1}!",topleft=(200, 12),
+        fontsize=30,
+        color=BLACK
+            )
+        else:
+            screen.draw.text(f"Catch only {target_fruit2}!",topleft=(200, 12),
         fontsize=30,
         color=BLACK
             )
     else:
-        if not level1_over:
+        if not level1_over or level2_over:
             screen.draw.filled_rect(Rect((250, 90), (100, 40)), BUTTON_COLOR)
             screen.draw.text("Start", center=(300, 110), fontsize=24, color=TEXT_COLOR)
             screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
-        if level1_over:
+        if level1_over and not level2_over:
             rect = Rect((250, HEIGHT // 2 - 20), (120, 50))
             screen.draw.filled_rect(rect, BUTTON_COLOR)
             screen.draw.text("Begin Level 2", center=rect.center, fontsize=26, color=TEXT_COLOR)
@@ -141,7 +156,6 @@ def on_mouse_down(pos):
             begin()
         elif level1_over and level2_rect.collidepoint(pos):
             current_level = 2
-            level1_over = False
             begin()
 
 def display_score():
@@ -191,6 +205,3 @@ def update_timer():
 
 clock.schedule_interval(update_timer, 1.0)
 pgzrun.go()
-
-
-
