@@ -150,12 +150,12 @@ def display_score():
 
 def level_checker():
     global level1_over, level2_over, current_level, level1_score, level1_time, level2_time
-    if current_level == 1 and score >= 30:
+    if current_level == 1 and score >= 100 or time_left==0:
         level1_time = 60 - time_left
         level1_score = score
         level1_over = True
         end_level()
-    elif current_level == 2 and score >= 40:
+    elif current_level == 2 and score >= 150 or time_left==0:
         level2_time = 60 - time_left
         level2_over = True
         end_level()
