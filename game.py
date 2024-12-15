@@ -107,8 +107,8 @@ def begin():
     elif current_level == 2:
         speed = 3
     time_left = 60
-    clock.unschedule(update_timer)  # Unschedule the previous timer
-    clock.schedule_interval(update_timer, 1.0)  # Reschedule the timer
+    clock.unschedule(update_timer) 
+    clock.schedule_interval(update_timer, 1.0) 
 
  
 def draw():
