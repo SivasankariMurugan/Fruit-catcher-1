@@ -2,6 +2,7 @@ import pgzrun
 import random
 import time
 import pygame
+pygame.init()
 pygame.mixer.init()
 TITLE = "Fruit Catcher"
 WIDTH = 600
@@ -30,11 +31,11 @@ level2_time = 0
 target_fruit1=random.choice(fruits)
 target_fruit2=random.choice(fruits)
 background_image="game_bg.png"
-catch_sound = pygame.mixer.Sound("fruit-in-basket.mp3")
-bomb_sound = pygame.mixer.Sound("explosion.mp3")
-game_over_sound = pygame.mixer.Sound('game-over.mp3')
-ticking_sound = pygame.mixer.Sound('last.tick.sound.mp3')
-pygame.mixer.music.load('bgm.mp3')
+catch_sound = pygame.mixer.Sound("fruit-in-basket.wav")
+bomb_sound = pygame.mixer.Sound("explosion.wav")
+game_over_sound = pygame.mixer.Sound('game-over.wav')
+ticking_sound = pygame.mixer.Sound('last.tick.sound.wav')
+pygame.mixer.music.load('bgm.wav')
 pygame.mixer.music.play(-1) 
 
 
