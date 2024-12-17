@@ -29,7 +29,7 @@ level1_time = 0
 level2_time = 0
 target_fruit1=random.choice(fruits)
 target_fruit2=random.choice(fruits)
-
+background_image=game_bg
 
 def load_highscore():
     global high_score
@@ -112,7 +112,7 @@ def begin():
 
  
 def draw():
-    screen.fill(BACKGROUND_COLOR)
+    screen.blit(background_image, (0, 0))
     if game_active:
         basket.draw()
         for obj in falling_objects:
@@ -134,7 +134,7 @@ def draw():
             screen.draw.filled_rect(Rect((250, 90), (100, 40)), BUTTON_COLOR)
             screen.draw.text("Start", center=(300, 110), fontsize=24, color=TEXT_COLOR)
             screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
-        if level1_over and not level2_over:
+        elif level1_over and not level2_over:
             rect = Rect((250, HEIGHT // 2 - 20), (120, 50))
             screen.draw.filled_rect(rect, BUTTON_COLOR)
             screen.draw.text("Begin Level 2", center=rect.center, fontsize=26, color=TEXT_COLOR)
@@ -185,15 +185,16 @@ def update():
     level_checker()
 
 def end_level():
-    global game_active, high_score, total_time_taken
+    global game_active, high_score, total_time_taken,level2_over
     game_active = False
-    if score + level1_score > high_score:
+    if level2_over and (score + level1_score) > high_score:
         high_score = score + level1_score
         save_highscore()
     if current_level == 1:
         total_time_taken = level1_time
     elif current_level == 2:
         total_time_taken = level1_time + level2_time
+        level2_over=True
 
 def update_timer():
     global time_left, game_active
