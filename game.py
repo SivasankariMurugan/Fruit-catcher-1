@@ -1,14 +1,15 @@
 import pgzrun
 import random
 import time
-
+import pygame
+pygame.mixer.init()
 TITLE = "Fruit Catcher"
 WIDTH = 600
-HEIGHT = 600
+HEIGHT = 570
 BACKGROUND_COLOR = (175, 238, 238)
-BUTTON_COLOR = (100, 200, 100)
-TEXT_COLOR = (0, 0, 0)
-BLACK = (0, 0, 0)
+BUTTON_COLOR = (0,100,0)
+TEXT_COLOR = (255,255,255)
+WHITE = (255,255,255)
 
 game_active = False
 current_level = 0
@@ -22,14 +23,20 @@ bombs = ["bomb1", "bomb2"]
 speed = 2
 score = 0
 high_score = 0
-
 time_left = 60
 total_time_taken = 0
 level1_time = 0
 level2_time = 0
 target_fruit1=random.choice(fruits)
 target_fruit2=random.choice(fruits)
-background_image=game_bg
+background_image="game_bg.png"
+catch_sound = pygame.mixer.Sound("fruit-in-basket.mp3")
+bomb_sound = pygame.mixer.Sound("explosion.mp3")
+game_over_sound = pygame.mixer.Sound('game-over.mp3')
+ticking_sound = pygame.mixer.Sound('last.tick.sound.mp3')
+pygame.mixer.music.load('bgm.mp3')
+pygame.mixer.music.play(-1) 
+
 
 def load_highscore():
     global high_score
@@ -79,17 +86,23 @@ def collision_detection():
             if current_level==1:
                 if obj.image == target_fruit1:
                     score += 10
+                    catch_sound.play()
                 elif obj.image in bombs:
                     score -= 5
+                    bomb_sound.play()
                 elif obj.image in fruits:
-                    score += 5                
+                    score += 5 
+                    catch_sound.play()               
             elif current_level==2:
                 if obj.image == target_fruit2:
                     score += 10
+                    catch_sound.play()
                 elif obj.image in bombs:
                     score -= 10
+                    bomb_sound.play()
                 elif obj.image in fruits:
                     score += 5
+                    catch_sound.play()
             falling_objects.remove(obj)
         elif obj.y > HEIGHT:
             falling_objects.remove(obj)
@@ -118,58 +131,60 @@ def draw():
         for obj in falling_objects:
             obj.draw()
         display_score()
-        screen.draw.text(f"Time left: {time_left}", topright=(WIDTH - 10, 10), fontsize=30, color=BLACK)
+        screen.draw.text(f"Time left: {time_left}", topright=(WIDTH - 10, 10), fontsize=30, color=WHITE)
         if current_level==1:
             screen.draw.text(f"Catch only {target_fruit1}!",topleft=(200, 12),
         fontsize=30,
-        color=BLACK
+        color=WHITE
             )
         else:
             screen.draw.text(f"Catch only {target_fruit2}!",topleft=(200, 12),
         fontsize=30,
-        color=BLACK
+        color=WHITE
             )
     else:
         if not level1_over or level2_over:
             screen.draw.filled_rect(Rect((250, 90), (100, 40)), BUTTON_COLOR)
-            screen.draw.text("Start", center=(300, 110), fontsize=24, color=TEXT_COLOR)
+            screen.draw.text("START", center=(300, 110), fontsize=24, color=TEXT_COLOR)
             screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
         elif level1_over and not level2_over:
             rect = Rect((250, HEIGHT // 2 - 20), (120, 50))
             screen.draw.filled_rect(rect, BUTTON_COLOR)
             screen.draw.text("Begin Level 2", center=rect.center, fontsize=26, color=TEXT_COLOR)
-            screen.draw.text(f"Level 1 ended", center=(WIDTH // 2 + 10, HEIGHT // 2 - 80), fontsize=26, color=BLACK)
-            screen.draw.text(f"Level 1 Score: {score}", center=(WIDTH // 2 + 10, HEIGHT // 2 - 40), fontsize=26, color=TEXT_COLOR)
-        elif level2_over:
-            screen.draw.text(f"Level 2 Score: {score}", center=(WIDTH // 2, HEIGHT // 2 - 60), fontsize=40, color=TEXT_COLOR)
-            screen.draw.text(f"Total Score: {score + level1_score}", center=(WIDTH // 2, HEIGHT // 2 - 20), fontsize=40, color=TEXT_COLOR)
-            screen.draw.text(f"High Score: {high_score}", center=(WIDTH // 2, HEIGHT // 2 + 20), fontsize=40, color=TEXT_COLOR)
-            screen.draw.text(f"Total Time Taken: {total_time_taken} s", center=(WIDTH // 2, HEIGHT // 2 + 60), fontsize=40, color=TEXT_COLOR)
+            screen.draw.text(f"Level 1 ended", center=(WIDTH // 2 + 10, HEIGHT // 2 - 80), fontsize=26, color=(0,0,0))
+            screen.draw.text(f"Level 1 Score: {score}", center=(WIDTH // 2 + 10, HEIGHT // 2 - 40), fontsize=26, color=(0,0,0))
+        if level2_over:
+            screen.draw.filled_rect((Rect(( WIDTH // 2 - 200, HEIGHT//2-50), (400, 200))),BUTTON_COLOR)
+            screen.draw.text(f"Level 2 Score: {score}", center=(WIDTH // 2, HEIGHT // 2 -20 ), fontsize=40, color=TEXT_COLOR)
+            screen.draw.text(f"Total Score: {score + level1_score}", center=(WIDTH // 2, HEIGHT // 2+20 ), fontsize=40, color=TEXT_COLOR)
+            screen.draw.text(f"High Score: {high_score}", center=(WIDTH // 2, HEIGHT // 2 + 60), fontsize=40, color=TEXT_COLOR)
+            screen.draw.text(f"Total Time Taken: {total_time_taken} s", center=(WIDTH // 2, HEIGHT // 2 + 100), fontsize=40, color=TEXT_COLOR)
 
 def on_mouse_down(pos):
-    global current_level, level1_over
+    global current_level, level1_over,level2_over
     if not game_active:
         start_rect = Rect((250, 90), (100, 40))
         level2_rect = Rect((250, HEIGHT // 2 - 20), (100, 40))
         if start_rect.collidepoint(pos):
             current_level = 1
+            level2_over=False
             begin()
         elif level1_over and level2_rect.collidepoint(pos):
             current_level = 2
             begin()
 
 def display_score():
-    screen.draw.text(f"Score: {score}", topleft=(12, 12), fontsize=30, color=BLACK)
-    screen.draw.text(f"Level: {current_level}", topleft=(12, 45), fontsize=30, color=BLACK)
+    screen.draw.text(f"Score: {score}", topleft=(12, 12), fontsize=30, color=WHITE)
+    screen.draw.text(f"Level: {current_level}", topleft=(12, 45), fontsize=30, color=WHITE)
 
 def level_checker():
-    global level1_over, level2_over, current_level, level1_score, level1_time, level2_time
-    if current_level == 1 and score >= 100 or time_left==0:
+    global level1_over, level2_over, current_level, level1_score, level1_time, level2_time,score
+    if current_level == 1 and score >= 10 or time_left==0:
         level1_time = 60 - time_left
         level1_score = score
         level1_over = True
         end_level()
-    elif current_level == 2 and score >= 150 or time_left==0:
+    elif current_level == 2 and score >= 20 or time_left==0:
         level2_time = 60 - time_left
         level2_over = True
         end_level()
@@ -187,19 +202,20 @@ def update():
 def end_level():
     global game_active, high_score, total_time_taken,level2_over
     game_active = False
-    if level2_over and (score + level1_score) > high_score:
+    if level2_over and (score + level1_score)> high_score:
         high_score = score + level1_score
         save_highscore()
     if current_level == 1:
         total_time_taken = level1_time
     elif current_level == 2:
         total_time_taken = level1_time + level2_time
-        level2_over=True
-
+    game_over_sound.play()
 def update_timer():
     global time_left, game_active
     if time_left > 0:
         time_left -= 1
+        if time_left==10:
+            ticking_sound.play()
     else:
         clock.unschedule(update_timer)
         end_level()
