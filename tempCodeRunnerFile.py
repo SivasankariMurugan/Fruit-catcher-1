@@ -1,0 +1,1 @@
+background_image="game_bg.png"
