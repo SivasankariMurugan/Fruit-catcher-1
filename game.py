@@ -33,12 +33,12 @@ target_fruit2=random.choice(fruits)
 background_image="game_bg.png"
 catch_sound = pygame.mixer.Sound("sound/fruit-in-basket.wav")
 bomb_sound = pygame.mixer.Sound("sound/explosion.wav")
-bomb_sound.set_volume(0.1)
+bomb_sound.set_volume(0.2)
 game_over_sound = pygame.mixer.Sound('sound/game-over.wav')
 ticking_sound = pygame.mixer.Sound('sound/last.tick.sound.wav')
 target_sound=pygame.mixer.Sound('sound/target.wav')
-pygame.mixer.music.load('sound/bgm.wav')
-pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.load('sound/bgm_rev.wav')
+pygame.mixer.music.set_volume(0.2)
 pygame.mixer.music.play(-1) 
 
 
@@ -183,12 +183,12 @@ def display_score():
 
 def level_checker():
     global level1_over, level2_over, current_level, level1_score, level1_time, level2_time,score
-    if current_level == 1 and score >= 100 or time_left==0:
+    if current_level == 1 and (score >= 100 or time_left==0):
         level1_time = 60 - time_left
         level1_score = score
         level1_over = True
         end_level()
-    elif current_level == 2 and score >= 200 or time_left==0:
+    elif current_level == 2 and (score >= 200 or time_left==0):
         level2_time = 60 - time_left
         level2_over = True
         end_level()
