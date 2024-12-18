@@ -174,7 +174,7 @@ def on_mouse_down(pos):
     global current_level, level1_over,level2_over
     if not game_active:
         start_rect = Rect((250, 90), (100, 40))
-        level2_rect = Rect((250, HEIGHT // 2 ), (100, 40))
+        level2_rect = Rect((250, HEIGHT // 2 ), (120, 50))
         if start_rect.collidepoint(pos):
             current_level = 1
             level2_over=False
