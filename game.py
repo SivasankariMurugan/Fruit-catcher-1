@@ -152,11 +152,17 @@ def draw():
             screen.draw.text("START", center=(300, 110), fontsize=24, color=TEXT_COLOR)
             screen.draw.text("Fruit Catcher", center=(300, 50), fontsize=40, color=TEXT_COLOR)
         elif level1_over and not level2_over:
-            rect = Rect((250, HEIGHT // 2 - 20), (120, 50))
+            rect = Rect((250, HEIGHT // 2 ), (120, 50))
             screen.draw.filled_rect(rect, BUTTON_COLOR)
             screen.draw.text("Begin Level 2", center=rect.center, fontsize=26, color=TEXT_COLOR)
-            screen.draw.text(f"Level 1 ended", center=(WIDTH // 2 + 10, HEIGHT // 2 - 80), fontsize=26, color=(0,0,0))
-            screen.draw.text(f"Level 1 Score: {score}", center=(WIDTH // 2 + 10, HEIGHT // 2 - 40), fontsize=26, color=(0,0,0))
+
+            level_ended_rect = Rect((WIDTH // 2 - 160, HEIGHT // 2 - 100), (320, 50))
+            level_score_rect = Rect((WIDTH // 2 - 160, HEIGHT // 2 - 60), (320, 50))
+            screen.draw.filled_rect(level_ended_rect, BUTTON_COLOR)  # White background
+            screen.draw.text("Level 1 ended", center=(WIDTH // 2, HEIGHT // 2 - 75), fontsize=26, color=TEXT_COLOR)  
+            screen.draw.filled_rect(level_score_rect, BUTTON_COLOR)  # White background
+            screen.draw.text(f"Level 1 Score: {score}", center=(WIDTH // 2, HEIGHT // 2 - 35), fontsize=26, color=TEXT_COLOR)
+            
         if level2_over:
             screen.draw.filled_rect((Rect(( WIDTH // 2 - 200, HEIGHT//2-50), (400, 200))),BUTTON_COLOR)
             screen.draw.text(f"Level 2 Score: {score}", center=(WIDTH // 2, HEIGHT // 2 -20 ), fontsize=40, color=TEXT_COLOR)
@@ -168,7 +174,7 @@ def on_mouse_down(pos):
     global current_level, level1_over,level2_over
     if not game_active:
         start_rect = Rect((250, 90), (100, 40))
-        level2_rect = Rect((250, HEIGHT // 2 - 20), (100, 40))
+        level2_rect = Rect((250, HEIGHT // 2 ), (120, 50))
         if start_rect.collidepoint(pos):
             current_level = 1
             level2_over=False
